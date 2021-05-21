@@ -49,7 +49,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Flutter Gallery ${{ github.ref }}
+        release_name: Vampire the Masquerade Dice Roller ${{ github.ref }}
         body_path: CHANGELOG.md
         draft: true
         prerelease: false
@@ -114,8 +114,8 @@ jobs:
         flutter config --enable-windows-desktop
     - run: flutter doctor -v
 
-    # Checkout gallery code, recreate missing files, and get packages.
-    - name: Checkout gallery code
+    # Checkout roller code, recreate missing files, and get packages.
+    - name: Checkout roller code
       uses: actions/checkout@v2
     - run: flutter create .
     - run: flutter pub get
@@ -147,19 +147,19 @@ jobs:
         Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
     - name: Rename build for Android
       if: matrix.target == 'Android'
-      run: mv app-release.apk $GITHUB_WORKSPACE/flutter_gallery_${{ matrix.target }}.apk
+      run: mv app-release.apk $GITHUB_WORKSPACE/vtm_dice_roller${{ matrix.target }}.apk
       working-directory: ${{ matrix.build_path }}
     - name: Compress build for Linux
       if: matrix.target == 'Linux'
-      run: tar czf $GITHUB_WORKSPACE/flutter_gallery_${{ matrix.target }}.tar.gz *
+      run: tar czf $GITHUB_WORKSPACE/vtm_dice_roller${{ matrix.target }}.tar.gz *
       working-directory: ${{ matrix.build_path }}
     - name: Compress build for macOS
       if: matrix.target == 'macOS'
-      run: ditto -c -k --sequesterRsrc --keepParent Flutter\ Gallery.app $GITHUB_WORKSPACE/flutter_gallery_${{ matrix.target }}.zip
+      run: ditto -c -k --sequesterRsrc --keepParent Flutter\ VtMDiceRoller.app $GITHUB_WORKSPACE/vtm_dice_roller${{ matrix.target }}.zip
       working-directory: ${{ matrix.build_path }}
     - name: Compress build for Windows
       if: matrix.target == 'Windows'
-      run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\flutter_gallery_${{ matrix.target }}.zip
+      run: compress-archive -Path * -DestinationPath ${env:GITHUB_WORKSPACE}\vtm_dice_roller${{ matrix.target }}.zip
       working-directory: ${{ matrix.build_path }}
 
     # Upload the build.
@@ -170,6 +170,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.draft-release.outputs.upload_url }}
-        asset_path: ./flutter_gallery_${{ matrix.target }}${{ matrix.asset_extension }}
-        asset_name: flutter_gallery_${{ matrix.target }}${{ matrix.asset_extension }}
+        asset_path: ./vtm_dice_roller)${{ matrix.target }}${{ matrix.asset_extension }}
+        asset_name: vtm_dice_roller_${{ matrix.target }}${{ matrix.asset_extension }}
         asset_content_type: ${{ matrix.asset_content_type }}
