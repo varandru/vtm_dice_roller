@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
       List<TextSpan> spans = [];
 
       for (int i = 0; i < _diceCount; i++) {
-        int roll = Random().nextInt(9) + 1;
+        int roll = Random().nextInt(10) + 1;
         // 1. Start a roll, in case of explosions, which I'll do later
         spans.add(const TextSpan(text: "("));
         if (roll == 1) {
@@ -198,6 +198,32 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ));
           _successCount++;
+
+          while (_isExploding && roll == 10) {
+            roll = Random().nextInt(10) + 1;
+            spans.add(const TextSpan(text: " + "));
+            if (roll == 1) {
+              spans.add(TextSpan(
+                text: roll.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w200,
+                  color: Colors.redAccent,
+                ),
+              ));
+              _successCount--;
+            } else if (roll >= _difficulty) {
+              spans.add(TextSpan(
+                text: roll.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.greenAccent,
+                ),
+              ));
+              _successCount++;
+            } else {
+              spans.add(TextSpan(text: roll.toString()));
+            }
+          }
         } else {
           spans.add(TextSpan(text: roll.toString()));
         }
