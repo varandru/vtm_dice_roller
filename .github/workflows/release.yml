@@ -170,6 +170,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.draft-release.outputs.upload_url }}
-        asset_path: ./vtm_dice_roller)${{ matrix.target }}${{ matrix.asset_extension }}
+        asset_path: ./vtm_dice_roller_${{ matrix.target }}${{ matrix.asset_extension }}
         asset_name: vtm_dice_roller_${{ matrix.target }}${{ matrix.asset_extension }}
         asset_content_type: ${{ matrix.asset_content_type }}
