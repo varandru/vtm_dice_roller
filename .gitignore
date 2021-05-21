@@ -47,7 +47,7 @@ app.*.map.json
 
 # We don't need implementation commited, it auto-generates anyway
 **/.idea/**
-**/android/**
+# **/android/**
 **/ios/**
 **/linux/**
 **/macos/**
