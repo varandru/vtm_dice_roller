@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,20 +12,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = ThemeData(
+        colorScheme: ColorScheme(
+      primary: const Color(0xffC92F2F),
+      primaryVariant: const Color(0xff97000D),
+      onPrimary: const Color(0xffF3EED9),
+      secondary: const Color(0xffA7777A),
+      secondaryVariant: const Color(0xffC92F2F),
+      onSecondary: Colors.amber,
+      background: Colors.grey.shade900,
+      onBackground: Colors.white,
+      surface: Colors.grey.shade700,
+      onSurface: Colors.white,
+      error: Colors.yellow,
+      onError: Colors.black,
+      brightness: Brightness.dark,
+    ));
+
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      theme: theme,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -32,15 +40,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -48,68 +47,186 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final _minDiceCount = 1;
+  final _maxDiceCount = 20;
+  final _minDifficulty = 2;
+  final _maxDifficulty = 9;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  int _diceCount = 1;
+  int _difficulty = 2;
+  bool _isExploding = false;
+
+  RichText _rollResult = RichText(
+    text: const TextSpan(
+      text: "",
+    ),
+  );
+  int _successCount = 0;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    List<Widget> diceScroll = [];
+    List<Widget> difficultyScroll = [];
+
+    for (int i = _minDiceCount; i < _maxDiceCount; i++) {
+      diceScroll.add(TextWithNumber(i));
+    }
+
+    for (int i = _minDifficulty; i < _maxDifficulty; i++) {
+      difficultyScroll.add(TextWithNumber(i));
+    }
+
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Flexible(
+                  child: Column(
+                    children: [
+                      Text(
+                        "# Dice",
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Flexible(
+                        child: ListWheelScrollView(
+                          itemExtent: 75.0,
+                          children: diceScroll,
+                          onSelectedItemChanged: (value) {
+                            _diceCount = value;
+                          },
+                          squeeze: 1.5,
+                          physics: const FixedExtentScrollPhysics(),
+                        ),
+                      ),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+                Flexible(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Difficulty",
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Flexible(
+                        child: ListWheelScrollView(
+                          itemExtent: 75.0,
+                          children: difficultyScroll,
+                          onSelectedItemChanged: (value) {
+                            _difficulty = value;
+                          },
+                          physics: const FixedExtentScrollPhysics(),
+                        ),
+                      ),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.start,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
+          ),
+          Flexible(
+            child: SwitchListTile(
+              value: _isExploding,
+              title: const Text("Do dice explode on 10?"),
+              secondary: Icon(_isExploding
+                  ? Icons.celebration
+                  : Icons.celebration_outlined),
+              onChanged: (value) => setState(() => _isExploding = value),
+            ),
+          ),
+          Flexible(
+            child: TextButton(
+              onPressed: roll,
+              child: Text(
+                "Roll!",
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ),
+          ),
+          Flexible(
+            child: Center(
+              child: _rollResult,
+            ),
+          ),
+          Flexible(
+            child: Text(
+              "Successes: " + _successCount.toString(),
               style: Theme.of(context).textTheme.headline4,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  void roll() {
+    setState(() {
+      _successCount = 0;
+      List<TextSpan> spans = [];
+
+      for (int i = 0; i < _diceCount; i++) {
+        int roll = Random().nextInt(9) + 1;
+        // 1. Start a roll, in case of explosions, which I'll do later
+        spans.add(const TextSpan(text: "("));
+        if (roll == 1) {
+          spans.add(TextSpan(
+            text: roll.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.w200,
+              color: Colors.redAccent,
+            ),
+          ));
+          _successCount--;
+        } else if (roll >= _difficulty) {
+          spans.add(TextSpan(
+            text: roll.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.greenAccent,
+            ),
+          ));
+          _successCount++;
+        } else {
+          spans.add(TextSpan(text: roll.toString()));
+        }
+        // 2. Explosions handling goes here
+        // 3. Finish roll
+        spans.add(const TextSpan(text: ")"));
+        if (i < _diceCount - 1) spans.add(const TextSpan(text: " + "));
+      }
+      _rollResult = RichText(
+        text: TextSpan(
+          text: '',
+          style: Theme.of(context).textTheme.headline6,
+          children: spans,
+        ),
+      );
+    });
+  }
+}
+
+class TextWithNumber extends StatelessWidget {
+  const TextWithNumber(this.number, {Key? key}) : super(key: key);
+
+  final int number;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      number.toString(),
+      style: Theme.of(context).textTheme.headline5,
     );
   }
 }
