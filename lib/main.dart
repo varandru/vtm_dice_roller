@@ -99,12 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       Flexible(
                         child: ListWheelScrollView(
-                          itemExtent: 75.0,
+                          itemExtent: 60.0,
                           children: diceScroll,
                           onSelectedItemChanged: (value) {
-                            _diceCount = value;
+                            _diceCount = value + 1;
                           },
-                          squeeze: 1.5,
+                          squeeze: 1.0,
                           physics: const FixedExtentScrollPhysics(),
                         ),
                       ),
@@ -121,10 +121,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       Flexible(
                         child: ListWheelScrollView(
-                          itemExtent: 75.0,
+                          itemExtent: 60.0,
                           children: difficultyScroll,
                           onSelectedItemChanged: (value) {
-                            _difficulty = value;
+                            _difficulty = value + _minDifficulty;
                           },
                           physics: const FixedExtentScrollPhysics(),
                         ),
@@ -250,9 +250,11 @@ class TextWithNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      number.toString(),
-      style: Theme.of(context).textTheme.headline5,
+    return Center(
+      child: Text(
+        number.toString(),
+        style: Theme.of(context).textTheme.headline5,
+      ),
     );
   }
 }
